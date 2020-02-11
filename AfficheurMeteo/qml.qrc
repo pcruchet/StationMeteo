@@ -1,0 +1,15 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>content/Afficheur.qml</file>
+        <file>content/afficheur.js</file>
+        <file>content/RoseDesVents.qml</file>
+        <file>content/boussole.jpg</file>
+        <file>content/directionVent.png</file>
+        <file>content/fleche.jpg</file>
+        <file>content/AfficheurVent.qml</file>
+        <file>content/AfficheurBeaufort.qml</file>
+        <file>content/AfficheurBeaufort.js</file>
+        <file>content/AfficheurPluie.qml</file>
+    </qresource>
+</RCC>

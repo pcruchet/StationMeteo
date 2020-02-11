@@ -1,0 +1,59 @@
+Validation as been done with a program which decodes the Oregon frames:
+
+Simulate: 50FA28A428202290834B46
+50FA28A428202290834B46   TH2[10250] THGR810 CH 10 addr:28 temp:22,2°C | 71,96°F hum:39 Dry      Battery OK bits=80 
+Simulate: 50EA4C106F301190630600
+50EA4C106F301190630600   TEMP2[28417] THN132N,THWR288,AW131 CH 1 addr:6F temp:11,3°C | 52,34°F  Battery OK bits=80 
+
+
+Oregon Scientific sensors
+
+The two first bytes of an OS frame represent the type of sensor. Here is all the sensors code I found on the net.
+
+|.Sensor name|.Code|_.Type|
+|Oregon-THR128
+Oregon-THR138
+Oregon-THC138|0x0A4D|Inside Temperature|
+|Oregon-THC238
+Oregon-THC268
+Oregon-THN132N
+Oregon-THWR288A
+Oregon-THRN122N
+Oregon-THN122N
+Oregon-AW129
+Oregon-AW131|0xEA4C|Outside/Water Temp|
+|Oregon-THWR800|0xCA48|Water Temp|
+|Oregon-THGN122N
+Oregon-THGN123N
+Oregon-THGR122NX
+Oregon-THGR228N
+Oregon-THGR238
+Oregon-THGR268|0x1A2D|Inside Temp-Hygro|
+|Oregon-THGR810|0xFA28|Inside Temp-Hygro|
+|Oregon-RTGR328N|0x*ACC|Outside Temp-Hygro|
+|Oregon-THGR328N|0xCA2C|Outside Temp-Hygro|
+|Oregon-WTGR800|0xFAB8|Outside Temp-Hygro|
+|Oregon-THGR918
+Oregon-THGRN228NX
+Oregon-THGN500|0x1A3D|Outside Temp-Hygro|
+|Huger - BTHR918|0x5A5D|Inside Temp-Hygro-Baro|
+|Oregon-BTHR918N
+Oregon-BTHR968|0x5A6D|Inside Temp-Hygro-Baro|
+|Oregon-RGR126
+Oregon-RGR682
+Oregon-RGR918|0x2A1D|Rain Gauge|
+|Oregon-PCR800|0x2A19|Rain Gauge|
+|Oregon-WTGR800|0x1A99|Anemometer|
+|Oregon-WGR800|0x1A89|Anemometer|
+|Huger-STR918
+Oregon-WGR918|0x3A0D|Anemometer|
+|Oregon-UVN128
+Oregon-UV138|0xEA7C|UV sensor|
+|Oregon-UVN800|0xDA78|UV sensor|
+|Oregon-RTGR328N|0x*AEC|Date & Time|
+|cent-a-meter
+OWL CM113
+Electrisave|0xEAC0|Ampere meter|
+|OWL CM119|0x1A*
+0x2A*
+0x3A**|Power meter|
