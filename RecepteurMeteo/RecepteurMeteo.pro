@@ -1,5 +1,5 @@
 QT -= gui
-QT += sql
+QT += sql websockets
 
 CONFIG += c++11 console
 CONFIG -= app_bundle
@@ -20,12 +20,18 @@ SOURCES += \
     recepteurrtl_433.cpp \
     stationws_3080.cpp \
     temperaturehumidite.cpp \
-    tramews_3080.cpp \
-    accesbdd.cpp
+    accesbdd.cpp \
+    trameoregon.cpp \
+    trame.cpp \
+    tramews_1080.cpp \
+    serveurmeteo.cpp
 
 HEADERS += \
     recepteurrtl_433.h \
     stationws_3080.h \
     temperaturehumidite.h \
-    tramews_3080.h \
-    accesbdd.h
+    accesbdd.h \
+    trameoregon.h \
+    trame.h \
+    tramews_1080.h \
+    serveurmeteo.h

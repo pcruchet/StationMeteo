@@ -33,7 +33,7 @@ int StationWS_3080::getNbMesures() const
     return nbMesures;
 }
 
-void StationWS_3080::AjouterMesures(const TrameWS_3080 _laTrame)
+void StationWS_3080::AjouterMesures(const TrameWS1080 _laTrame)
 {
     if(_laTrame.getBatterie() != "OK")
         emit BatterieFaible(idStation);

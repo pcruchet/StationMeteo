@@ -6,10 +6,10 @@
 AccesBDD::AccesBDD(QObject *parent) : QObject(parent)
 {
     bddMeteo =  QSqlDatabase::addDatabase(("QMYSQL"));
-    bddMeteo.setHostName("127.0.0.1");  //@RPI
-    bddMeteo.setUserName("root");       //philippe
-    bddMeteo.setPassword("toto");       //123
-    bddMeteo.setDatabaseName("meteo");  //Meteo
+    bddMeteo.setHostName("192.168.1.22");   //@RPI
+    bddMeteo.setUserName("philippe");       //philippe
+    bddMeteo.setPassword("123");            //123
+    bddMeteo.setDatabaseName("Meteo");      //Meteo
 
     if(bddMeteo.open())
     {

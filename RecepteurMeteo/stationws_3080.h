@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QDateTime>
 #include <QJsonObject>
-#include "tramews_3080.h"
+#include "tramews_1080.h"
 #include "accesbdd.h"
 
 class StationWS_3080 : public QObject
@@ -19,7 +19,7 @@ public:
     QString getNom() const;
     int getNbMesures() const;
 
-    void AjouterMesures(const TrameWS_3080 _laTrame);
+    void AjouterMesures(const TrameWS1080 _laTrame);
     bool EnregistrerMesures();
 
 signals:

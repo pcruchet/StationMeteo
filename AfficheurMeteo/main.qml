@@ -49,7 +49,7 @@ Window {
                 lesDixiemes = Outils.obtenirDixieme(obj.Rafale);
                 afficheurBeaufort.dixiemeRafale=Outils.ajouterPoint(lesDixiemes);
                 break;
-            case 53:
+            case 169:
                 afficheurSerre.humidite =  obj.Humidite;
                 afficheurSerre.temperature = Outils.obtenirTemperature(obj.Temperature);
                 lesDixiemes = Outils.obtenirDixieme(obj.Temperature);

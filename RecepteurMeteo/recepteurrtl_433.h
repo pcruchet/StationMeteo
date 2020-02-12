@@ -8,11 +8,14 @@
 #include <QTimer>
 
 #include "stationws_3080.h"
+#include "serveurmeteo.h"
 
 enum STATION
 {
-    STATION_1 = 71,
-    STATION_2
+    STATION_1 = 71,     // extérieur
+    STATION_2 = 161,    // voisin
+    STATION_3 = 169     // serre
+
 };
 
 class RecepteurRTL_433 : public QObject
@@ -35,7 +38,7 @@ private:
     QTimer timerBDD;
     AccesBDD laBdd;
     StationWS_3080 stationDeLaSerre;
-
+    ServeurMeteo leServeur;
 };
 
 #endif // RECEPTEURRTL_433_H

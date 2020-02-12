@@ -3,7 +3,8 @@
 #include <QDateTime>
 
 #include "recepteurrtl_433.h"
-#include "tramews_3080.h"
+#include "tramews_1080.h"
+#include "trameoregon.h"
 
 
 
@@ -15,7 +16,8 @@
 RecepteurRTL_433::RecepteurRTL_433(QObject *parent) :
     QObject(parent),
     process(nullptr),
-    stationDeLaSerre(71,laBdd)
+    stationDeLaSerre(71,laBdd),
+    leServeur(7777)
 {
     process = new QProcess(this);
     connect(process,&QProcess::readyReadStandardOutput,this,&RecepteurRTL_433::TraiterTrame);
@@ -42,9 +44,9 @@ RecepteurRTL_433::~RecepteurRTL_433()
 void RecepteurRTL_433::LancerEcoute()
 {
     QStringList arguments;
-    arguments << "-R" << "32" << "-F" << "json";
+    arguments << "-R" << "32" << "-R" << "12" << "-F" << "json";
     if(!process->isTransactionStarted())
-        process->start("rtl_433",arguments);
+        process->start("/home/philippe/StationMeteo/build-rtl_433-Desktop_Qt_5_12_1_GCC_64bit-Du00e9faut/src/rtl_433",arguments);
 }
 
 /**
@@ -54,6 +56,10 @@ void RecepteurRTL_433::LancerEcoute()
 void RecepteurRTL_433::TraiterTrame()
 {
     QByteArray sortieStandard = process->readAllStandardOutput();
+    TrameWS1080 trameStation1;
+    TrameOregon trameStation3;
+
+
 
     int indice = 0;
     while(sortieStandard[indice] != '}' && indice < sortieStandard.count())
@@ -73,10 +79,12 @@ void RecepteurRTL_433::TraiterTrame()
         QDateTime horodatage = QDateTime::fromString(jsonObject.value(QString("time")).toString(),QString("yyyy-MM-dd hh:mm:ss"));
 
         bool trameValide = false;
+
+
         QMultiMap<int,QDateTime>::iterator it = lesTramesDesStations.find(idStation);
         if (it != lesTramesDesStations.end())
         {
-            if(horodatage.secsTo(it.value())>50) // une trame toutes les 58 secondes
+            if(it.value().secsTo(horodatage)>50) // une trame toutes les 58 secondes
             {
                 lesTramesDesStations.remove(idStation);
                 trameValide = true;
@@ -90,14 +98,15 @@ void RecepteurRTL_433::TraiterTrame()
             switch (idStation)
             {
             case STATION_1:
-                TrameWS_3080 laTrame(jsonObject);
-                stationDeLaSerre.AjouterMesures(laTrame);
+                trameStation1 = TrameWS1080(jsonObject);
+                leServeur.processTextMessage(trameStation1.getTrameAfficheur());
+                //stationDeLaSerre.AjouterMesures(laTrame);
                 break;
-
-
+            case STATION_3:
+                trameStation3 = TrameOregon(jsonObject);
+                leServeur.processTextMessage(trameStation3.getTrameAfficheur());
+                break;
             }
-
-
         }
 
 
@@ -108,5 +117,5 @@ void RecepteurRTL_433::TraiterTrame()
 
 void RecepteurRTL_433::on_timeoutTimerBdd()
 {
-        stationDeLaSerre.EnregistrerMesures();
+    stationDeLaSerre.EnregistrerMesures();
 }
