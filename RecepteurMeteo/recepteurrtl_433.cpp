@@ -16,7 +16,8 @@
 RecepteurRTL_433::RecepteurRTL_433(QObject *parent) :
     QObject(parent),
     process(nullptr),
-    stationDeLaSerre(71,laBdd),
+    stationExterieure(STATION_1,laBdd),
+    stationSerre(STATION_3,laBdd),
     leServeur(7777)
 {
     QSettings initialisation("config.ini",QSettings::IniFormat);
@@ -59,10 +60,8 @@ void RecepteurRTL_433::LancerEcoute()
 void RecepteurRTL_433::TraiterTrame()
 {
     QByteArray sortieStandard = process->readAllStandardOutput();
-    TrameWS1080 trameStation1;
-    TrameOregon trameStation3;
 
-
+    qDebug() << "Trame reçue : " << sortieStandard;
 
     int indice = 0;
     while(sortieStandard[indice] != '}' && indice < sortieStandard.count())
@@ -77,12 +76,13 @@ void RecepteurRTL_433::TraiterTrame()
             trameCourante.remove(0,1);
 
         QJsonDocument doc = QJsonDocument::fromJson(trameCourante.toUtf8());
+        trameCourante.clear();
+
         QJsonObject jsonObject = doc.object();
         int idStation = jsonObject.value(QString("id")).toInt();
         QDateTime horodatage = QDateTime::fromString(jsonObject.value(QString("time")).toString(),QString("yyyy-MM-dd hh:mm:ss"));
 
         bool trameValide = false;
-
 
         QMultiMap<int,QDateTime>::iterator it = lesTramesDesStations.find(idStation);
         if (it != lesTramesDesStations.end())
@@ -97,24 +97,25 @@ void RecepteurRTL_433::TraiterTrame()
 
         if(trameValide)
         {
-            lesTramesDesStations.insert(idStation,horodatage);
+            TrameWS1080 trameStation1;
+            TrameOregon trameStation3;
+
             switch (idStation)
             {
             case STATION_1:
+                lesTramesDesStations.insert(idStation,horodatage);
                 trameStation1 = TrameWS1080(jsonObject);
-                leServeur.processTextMessage(trameStation1.getTrameAfficheur());
-                //stationDeLaSerre.AjouterMesures(laTrame);
+                leServeur.EnvoyerMessageTexte(trameStation1.getTrameAfficheur());
+                stationExterieure.AjouterMesures(trameStation1);
                 break;
             case STATION_3:
+                lesTramesDesStations.insert(idStation,horodatage);
                 trameStation3 = TrameOregon(jsonObject);
-                leServeur.processTextMessage(trameStation3.getTrameAfficheur());
+                leServeur.EnvoyerMessageTexte(trameStation3.getTrameAfficheur());
+                stationSerre.AjouterMesures(trameStation3);
                 break;
             }
         }
-
-
-
-        trameCourante.clear();
     }
 }
 
@@ -125,5 +126,6 @@ void RecepteurRTL_433::TraiterErreurProcess(QProcess::ProcessError _erreur)
 
 void RecepteurRTL_433::on_timeoutTimerBdd()
 {
-    stationDeLaSerre.EnregistrerMesures();
+    stationExterieure.EnregistrerMesures();
+    stationSerre.EnregistrerMesures();
 }

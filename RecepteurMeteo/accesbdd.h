@@ -14,6 +14,7 @@ public:
     explicit AccesBDD(QObject *parent = nullptr);
     ~AccesBDD();
     void EnregistrerTemperatureHumidite(const int _idStation, const double _temperature, const int _humidite);
+    void EnregistrerVent(const int _idStation,const double _vitesse,const int _direction, const double _rafale);
 
 signals:
 

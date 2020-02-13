@@ -25,23 +25,13 @@ void ServeurMeteo::onNewConnection()
     qDebug() << "Connexion d'un client";
 }
 
-void ServeurMeteo::processTextMessage(QString message)
+void ServeurMeteo::EnvoyerMessageTexte(QString message)
 {
     QWebSocket *pClient ;
     qDebug() << message;
     foreach (pClient, m_clients) {
         pClient->sendTextMessage(message);
-
     }
-
-
-}
-
-void ServeurMeteo::processBinaryMessage(QByteArray message)
-{
-    QWebSocket *pClient = qobject_cast<QWebSocket *>(sender());
-    if(pClient)
-        pClient->sendBinaryMessage(message);
 }
 
 void ServeurMeteo::socketDisconnected()

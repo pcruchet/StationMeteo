@@ -1,6 +1,6 @@
-#include "stationws1080.h"
+#include "stationthgr221.h"
 
-StationWS1080::StationWS1080(const int _idStation,AccesBDD &_bdd, QObject *parent) :
+StationTHGR221::StationTHGR221(const int _idStation, AccesBDD &_bdd, QObject *parent) :
     QObject(parent),
     idStation(_idStation),
     nbMesures(0),
@@ -8,12 +8,7 @@ StationWS1080::StationWS1080(const int _idStation,AccesBDD &_bdd, QObject *paren
 {
 }
 
-int StationWS1080::getNbMesures() const
-{
-    return nbMesures;
-}
-
-void StationWS1080::AjouterMesures(const TrameWS1080 _laTrame)
+void StationTHGR221::AjouterMesures(const TrameOregon _laTrame)
 {
     if(_laTrame.getBatterie() != "OK")
         emit BatterieFaible(idStation);
@@ -22,7 +17,7 @@ void StationWS1080::AjouterMesures(const TrameWS1080 _laTrame)
     nbMesures++;
 }
 
-bool StationWS1080::EnregistrerMesures()
+bool StationTHGR221::EnregistrerMesures()
 {
     bool retour = false;
     if(nbMesures > 0)
@@ -37,7 +32,3 @@ bool StationWS1080::EnregistrerMesures()
     }
     return retour;
 }
-
-
-
-

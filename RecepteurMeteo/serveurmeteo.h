@@ -13,14 +13,12 @@ class ServeurMeteo : public QObject
 public:
     explicit ServeurMeteo(quint16 _port, QObject *parent = nullptr);
     ~ServeurMeteo();
-    void processTextMessage(QString message);
+    void EnvoyerMessageTexte(QString message);
 
 signals:
 
 private slots:
     void onNewConnection();
-
-    void processBinaryMessage(QByteArray message);
     void socketDisconnected();
 
 private:

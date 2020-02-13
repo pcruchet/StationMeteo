@@ -12,11 +12,6 @@ class StationWS1080 : public QObject
     Q_OBJECT
 public:
     explicit StationWS1080(const int _idStation, AccesBDD &_bdd, QObject *parent = nullptr);
-
-    int getIdStation() const;
-    QDateTime getHorodatage() const;
-    QString getBatterie() const;
-    QString getNom() const;
     int getNbMesures() const;
 
     void AjouterMesures(const TrameWS1080 _laTrame);
@@ -31,9 +26,11 @@ private:
     QDateTime horodatage;
     QString batterie;
     QString nom;
+
     double cumulTemperature;
     int cumulHumidite;
     int nbMesures;
+
     AccesBDD &bdd;
 };
 

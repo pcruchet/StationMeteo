@@ -8,6 +8,7 @@
 #include <QTimer>
 
 #include "stationws1080.h"
+#include "stationthgr221.h"
 #include "serveurmeteo.h"
 
 enum STATION
@@ -38,7 +39,8 @@ private:
     QMultiMap <int, QDateTime> lesTramesDesStations;
     QTimer timerBDD;
     AccesBDD laBdd;
-    StationWS1080 stationDeLaSerre;
+    StationWS1080 stationExterieure;
+    StationTHGR221 stationSerre;
     ServeurMeteo leServeur;
     QString commande;
 };

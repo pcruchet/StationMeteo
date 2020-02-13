@@ -34,17 +34,26 @@ AccesBDD::~AccesBDD()
     bddMeteo.close();
 }
 
-
+/**
+ * @brief AccesBDD::EnregistrerTemperatureHumidite
+ * @param _idStation    Identifiant de la station
+ * @param _temperature  Valeur de la température
+ * @param _humidite     Valeur de l'humidité
+ *
+ * @details Enregistre la température et l'humidité de l'air en évitant les doublons
+ *          dans la base de données
+ */
 void AccesBDD::EnregistrerTemperatureHumidite(const int _idStation, const double _temperature, const int _humidite)
 {
     if(bddMeteo.isOpen())
     {
         QDateTime horodatageActuelle = QDateTime::currentDateTime();
         QSqlQuery requette(bddMeteo.database());
+
+        // récupération des deux dernières valeurs enregistrées
         requette.prepare("SELECT * FROM TemperatureHumidite WHERE idStation = :id ORDER BY horodatage DESC LIMIT 0,2 ");
         requette.bindValue(":id",_idStation);
         bool repetition = false;
-
         if(!requette.exec())
         {
             qDebug() << "Problème dans la requette EnregistrerTemperatureHumidite 1" ;
@@ -70,6 +79,8 @@ void AccesBDD::EnregistrerTemperatureHumidite(const int _idStation, const double
                 humidite = requette.value("humidite").toInt();
                 valeurs[1] = TemperatureHumidite(temperature,humidite);
             }
+
+            // si la nouvelle valeur est identique au deux dernières valeurs enregistrées
             if(valeurs[0] == TemperatureHumidite(_temperature,_humidite) && valeurs[0] == valeurs[1])
             {
                 requette.prepare("UPDATE TemperatureHumidite SET horodatage = :nouvelle WHERE horodatage = :ancienne AND idStation = :id");
@@ -85,6 +96,7 @@ void AccesBDD::EnregistrerTemperatureHumidite(const int _idStation, const double
             }
         }
 
+        // insertion normale dans la BDD si il n'y a pas de répétition
         if(!repetition)
         {
             requette.prepare("INSERT INTO `TemperatureHumidite` (`horodatage`, `temperature`, `humidite`, `idStation`) "
@@ -105,4 +117,26 @@ void AccesBDD::EnregistrerTemperatureHumidite(const int _idStation, const double
     {
         qDebug() << "La base de données n'est pas ouverte ";
     }
+}
+
+void AccesBDD::EnregistrerVent(const int _idStation, const double _vitesse, const int _direction, const double _rafale)
+{
+    if(bddMeteo.isOpen())
+    {
+        QDateTime horodatageActuelle = QDateTime::currentDateTime();
+        QSqlQuery requette(bddMeteo.database());
+        requette.prepare("SELECT * FROM Vent WHERE idStation = :id ORDER BY horodatage DESC LIMIT 0,2 ");
+        requette.bindValue(":id",_idStation);
+        bool repetition = false;
+        if(!requette.exec())
+        {
+            qDebug() << "Problème dans la requette EnregistrerTemperatureHumidite 1" ;
+        }
+        int nbLignes = requette.size();
+        if(nbLignes == 2)
+        {
+
+        }
+    }
+
 }
