@@ -18,20 +18,23 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
     recepteurrtl_433.cpp \
-    stationws_3080.cpp \
+    stationws1080.cpp \
     temperaturehumidite.cpp \
     accesbdd.cpp \
     trameoregon.cpp \
     trame.cpp \
-    tramews_1080.cpp \
-    serveurmeteo.cpp
+    serveurmeteo.cpp \
+    tramews1080.cpp
 
 HEADERS += \
     recepteurrtl_433.h \
-    stationws_3080.h \
+    stationws1080.h \
     temperaturehumidite.h \
     accesbdd.h \
     trameoregon.h \
     trame.h \
-    tramews_1080.h \
-    serveurmeteo.h
+    serveurmeteo.h \
+    tramews1080.h
+
+DISTFILES += \
+    config.ini

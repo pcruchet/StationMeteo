@@ -3,7 +3,7 @@
 #include <QDateTime>
 
 #include "recepteurrtl_433.h"
-#include "tramews_1080.h"
+#include "tramews1080.h"
 #include "trameoregon.h"
 
 
@@ -19,10 +19,13 @@ RecepteurRTL_433::RecepteurRTL_433(QObject *parent) :
     stationDeLaSerre(71,laBdd),
     leServeur(7777)
 {
+    QSettings initialisation("config.ini",QSettings::IniFormat);
+    commande = initialisation.value("Recepteur/commande").toString();
+
     process = new QProcess(this);
     connect(process,&QProcess::readyReadStandardOutput,this,&RecepteurRTL_433::TraiterTrame);
+    connect(process,&QProcess::errorOccurred,this,&RecepteurRTL_433::TraiterErreurProcess);
     connect(&timerBDD,&QTimer::timeout,this,&RecepteurRTL_433::on_timeoutTimerBdd);
-
     timerBDD.start(15*60*1000); // enregistrement toutes les 15 minutes
 
 }
@@ -46,7 +49,7 @@ void RecepteurRTL_433::LancerEcoute()
     QStringList arguments;
     arguments << "-R" << "32" << "-R" << "12" << "-F" << "json";
     if(!process->isTransactionStarted())
-        process->start("/home/philippe/StationMeteo/build-rtl_433-Desktop_Qt_5_12_1_GCC_64bit-Du00e9faut/src/rtl_433",arguments);
+        process->start(commande,arguments);
 }
 
 /**
@@ -113,6 +116,11 @@ void RecepteurRTL_433::TraiterTrame()
 
         trameCourante.clear();
     }
+}
+
+void RecepteurRTL_433::TraiterErreurProcess(QProcess::ProcessError _erreur)
+{
+    qDebug() << "Erreur du process " << commande << " Erreur " << _erreur;
 }
 
 void RecepteurRTL_433::on_timeoutTimerBdd()

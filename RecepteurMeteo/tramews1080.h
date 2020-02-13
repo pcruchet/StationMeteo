@@ -16,7 +16,7 @@ public:
     double getVitesseVent() const;
     double getRafale() const;
     double getPluie() const;
-    virtual QString getTrameAfficheur();
+    QString getTrameAfficheur();
 
 protected:
     double temperature;

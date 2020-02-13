@@ -1,4 +1,4 @@
-#include "tramews_1080.h"
+#include "tramews1080.h"
 
 TrameWS1080::TrameWS1080(const QJsonObject _jsonObject):
     Trame (_jsonObject)
@@ -21,7 +21,8 @@ TrameWS1080::TrameWS1080() :
 {
 }
 
-TrameWS1080::TrameWS1080(const TrameWS1080 &autre)
+TrameWS1080::TrameWS1080(const TrameWS1080 &autre):
+    Trame ()
 {
     idStation = autre.idStation;
     horodatage = autre.horodatage;

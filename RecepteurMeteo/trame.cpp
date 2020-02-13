@@ -44,3 +44,8 @@ QString Trame::getModele() const
 {
     return modele;
 }
+
+Trame::~Trame()
+{
+
+}

@@ -1,17 +1,17 @@
-#ifndef STATIONWS_3080_H
-#define STATIONWS_3080_H
+#ifndef STATIONWS1080_H
+#define STATIONWS1080_H
 
 #include <QObject>
 #include <QDateTime>
 #include <QJsonObject>
-#include "tramews_1080.h"
+#include "tramews1080.h"
 #include "accesbdd.h"
 
-class StationWS_3080 : public QObject
+class StationWS1080 : public QObject
 {
     Q_OBJECT
 public:
-    explicit StationWS_3080(const int _idStation, AccesBDD &_bdd, QObject *parent = nullptr);
+    explicit StationWS1080(const int _idStation, AccesBDD &_bdd, QObject *parent = nullptr);
 
     int getIdStation() const;
     QDateTime getHorodatage() const;
@@ -37,4 +37,4 @@ private:
     AccesBDD &bdd;
 };
 
-#endif // STATIONWS_3080_H
+#endif // STATIONWS1080_H

@@ -7,7 +7,7 @@
 #include <QMap>
 #include <QTimer>
 
-#include "stationws_3080.h"
+#include "stationws1080.h"
 #include "serveurmeteo.h"
 
 enum STATION
@@ -29,6 +29,7 @@ signals:
 
 private slots:
     void TraiterTrame();
+    void TraiterErreurProcess(QProcess::ProcessError _erreur);
     void on_timeoutTimerBdd();
 
 private:
@@ -37,8 +38,9 @@ private:
     QMultiMap <int, QDateTime> lesTramesDesStations;
     QTimer timerBDD;
     AccesBDD laBdd;
-    StationWS_3080 stationDeLaSerre;
+    StationWS1080 stationDeLaSerre;
     ServeurMeteo leServeur;
+    QString commande;
 };
 
 #endif // RECEPTEURRTL_433_H

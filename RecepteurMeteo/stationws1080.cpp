@@ -1,6 +1,6 @@
-#include "stationws_3080.h"
+#include "stationws1080.h"
 
-StationWS_3080::StationWS_3080(const int _idStation,AccesBDD &_bdd, QObject *parent) :
+StationWS1080::StationWS1080(const int _idStation,AccesBDD &_bdd, QObject *parent) :
     QObject(parent),
     idStation(_idStation),
     nbMesures(0),
@@ -8,32 +8,32 @@ StationWS_3080::StationWS_3080(const int _idStation,AccesBDD &_bdd, QObject *par
 {
 }
 
-int StationWS_3080::getIdStation() const
+int StationWS1080::getIdStation() const
 {
    return idStation;
 }
 
-QDateTime StationWS_3080::getHorodatage() const
+QDateTime StationWS1080::getHorodatage() const
 {
     return horodatage;
 }
 
-QString StationWS_3080::getBatterie() const
+QString StationWS1080::getBatterie() const
 {
     return batterie;
 }
 
-QString StationWS_3080::getNom() const
+QString StationWS1080::getNom() const
 {
     return nom;
 }
 
-int StationWS_3080::getNbMesures() const
+int StationWS1080::getNbMesures() const
 {
     return nbMesures;
 }
 
-void StationWS_3080::AjouterMesures(const TrameWS1080 _laTrame)
+void StationWS1080::AjouterMesures(const TrameWS1080 _laTrame)
 {
     if(_laTrame.getBatterie() != "OK")
         emit BatterieFaible(idStation);
@@ -42,7 +42,7 @@ void StationWS_3080::AjouterMesures(const TrameWS1080 _laTrame)
     nbMesures++;
 }
 
-bool StationWS_3080::EnregistrerMesures()
+bool StationWS1080::EnregistrerMesures()
 {
     bool retour = false;
     if(nbMesures > 0)

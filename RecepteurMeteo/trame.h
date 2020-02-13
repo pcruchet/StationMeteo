@@ -17,6 +17,7 @@ public:
     QString getBatterie() const;
     QString getModele() const;
     virtual QString getTrameAfficheur() = 0 ;
+    virtual ~Trame();
 
 protected:
     int idStation;

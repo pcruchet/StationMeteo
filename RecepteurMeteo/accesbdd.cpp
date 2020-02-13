@@ -2,14 +2,21 @@
 #include <QDebug>
 #include <QSqlQuery>
 #include <QSqlError>
+#include <QSettings>
 
 AccesBDD::AccesBDD(QObject *parent) : QObject(parent)
 {
+    QSettings initialisation("config.ini",QSettings::IniFormat);
+    QString serveur = initialisation.value("BaseDeDonnees/serveur").toString();
+    QString utilisateur = initialisation.value("BaseDeDonnees/utilisateur").toString();
+    QString motDePasse = initialisation.value("BaseDeDonnees/motDePasse").toString();
+    QString base = initialisation.value("BaseDeDonnees/base").toString();
+
     bddMeteo =  QSqlDatabase::addDatabase(("QMYSQL"));
-    bddMeteo.setHostName("192.168.1.22");   //@RPI
-    bddMeteo.setUserName("philippe");       //philippe
-    bddMeteo.setPassword("123");            //123
-    bddMeteo.setDatabaseName("Meteo");      //Meteo
+    bddMeteo.setHostName(serveur);
+    bddMeteo.setUserName(utilisateur);
+    bddMeteo.setPassword(motDePasse);
+    bddMeteo.setDatabaseName(base);
 
     if(bddMeteo.open())
     {
