@@ -5,6 +5,7 @@ ServeurMeteo::ServeurMeteo(quint16 _port, QObject *parent) : QObject(parent),
     m_pWebSocketServer(new QWebSocketServer(QStringLiteral("Station Météo"),
                                             QWebSocketServer::NonSecureMode, this))
 {
+    dernierMessage.clear();
     if (m_pWebSocketServer->listen(QHostAddress::Any, _port))
     {
         connect(m_pWebSocketServer,&QWebSocketServer::newConnection,this,&ServeurMeteo::onNewConnection);
@@ -23,6 +24,8 @@ void ServeurMeteo::onNewConnection()
     connect(pSocket,&QWebSocket::disconnected,this,&ServeurMeteo::socketDisconnected);
     m_clients << pSocket ;
     qDebug() << "Connexion d'un client";
+    if(!dernierMessage.isEmpty())
+        EnvoyerMessageTexte(dernierMessage);
 }
 
 void ServeurMeteo::EnvoyerMessageTexte(QString message)
@@ -32,6 +35,7 @@ void ServeurMeteo::EnvoyerMessageTexte(QString message)
     foreach (pClient, m_clients) {
         pClient->sendTextMessage(message);
     }
+    dernierMessage = message;
 }
 
 void ServeurMeteo::socketDisconnected()

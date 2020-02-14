@@ -16,18 +16,26 @@
 RecepteurRTL_433::RecepteurRTL_433(QObject *parent) :
     QObject(parent),
     process(nullptr),
+    leServeur(nullptr),
     stationExterieure(STATION_1,laBdd),
     stationSerre(STATION_3,laBdd),
-    leServeur(7777)
+    delaiBdd(15)
 {
     QSettings initialisation("config.ini",QSettings::IniFormat);
     commande = initialisation.value("Recepteur/commande").toString();
+    int port = initialisation.value("ServeurMeteo/port").toInt();
+    idStationExterieure = initialisation.value("Station1/id").toInt();
+    idStationSerre = initialisation.value("Station2/id").toInt();
+    delaiBdd = initialisation.value("ServeurMeteo/delai").toInt();
 
+    leServeur = new ServeurMeteo(static_cast<quint16>(port));
     process = new QProcess(this);
+
     connect(process,&QProcess::readyReadStandardOutput,this,&RecepteurRTL_433::TraiterTrame);
     connect(process,&QProcess::errorOccurred,this,&RecepteurRTL_433::TraiterErreurProcess);
     connect(&timerBDD,&QTimer::timeout,this,&RecepteurRTL_433::on_timeoutTimerBdd);
-    timerBDD.start(15*60*1000); // enregistrement toutes les 15 minutes
+
+    timerBDD.start(delaiBdd*60*1000);
 
 }
 
@@ -39,11 +47,15 @@ RecepteurRTL_433::~RecepteurRTL_433()
 {
     if(process != nullptr)
         delete process;
+    if(leServeur != nullptr)
+        delete leServeur;
 }
 
 /**
  * @brief RecepteurRTL_433::LancerEcoute
  * @details Lance le processus d'écoute du RTL_433
+ *          pour capteur Oregon et Fine Offset Electronics
+ *          Les trames reçues seront au format Json
  */
 void RecepteurRTL_433::LancerEcoute()
 {
@@ -60,9 +72,6 @@ void RecepteurRTL_433::LancerEcoute()
 void RecepteurRTL_433::TraiterTrame()
 {
     QByteArray sortieStandard = process->readAllStandardOutput();
-
-    qDebug() << "Trame reçue : " << sortieStandard;
-
     int indice = 0;
     while(sortieStandard[indice] != '}' && indice < sortieStandard.count())
     {
@@ -100,20 +109,19 @@ void RecepteurRTL_433::TraiterTrame()
             TrameWS1080 trameStation1;
             TrameOregon trameStation3;
 
-            switch (idStation)
+            if(idStation == idStationExterieure)
             {
-            case STATION_1:
                 lesTramesDesStations.insert(idStation,horodatage);
-                trameStation1 = TrameWS1080(jsonObject);
-                leServeur.EnvoyerMessageTexte(trameStation1.getTrameAfficheur());
+                trameStation1 = TrameWS1080(STATION_1,jsonObject);
+                leServeur->EnvoyerMessageTexte(trameStation1.getTrameAfficheur());
                 stationExterieure.AjouterMesures(trameStation1);
-                break;
-            case STATION_3:
+            }
+            else if (idStation == idStationSerre)
+            {
                 lesTramesDesStations.insert(idStation,horodatage);
-                trameStation3 = TrameOregon(jsonObject);
-                leServeur.EnvoyerMessageTexte(trameStation3.getTrameAfficheur());
+                trameStation3 = TrameOregon(STATION_3,jsonObject);
+                leServeur->EnvoyerMessageTexte(trameStation3.getTrameAfficheur());
                 stationSerre.AjouterMesures(trameStation3);
-                break;
             }
         }
     }

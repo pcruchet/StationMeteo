@@ -16,7 +16,6 @@ enum STATION
     STATION_1 = 71,     // extérieur
     STATION_2 = 161,    // voisin
     STATION_3 = 169     // serre
-
 };
 
 class RecepteurRTL_433 : public QObject
@@ -39,10 +38,15 @@ private:
     QMultiMap <int, QDateTime> lesTramesDesStations;
     QTimer timerBDD;
     AccesBDD laBdd;
+    QString commande;
+
+    ServeurMeteo *leServeur;
     StationWS1080 stationExterieure;
     StationTHGR221 stationSerre;
-    ServeurMeteo leServeur;
-    QString commande;
+
+    int idStationExterieure;
+    int idStationSerre;
+    int delaiBdd;
 };
 
 #endif // RECEPTEURRTL_433_H

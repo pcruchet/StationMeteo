@@ -4,6 +4,18 @@
 #include <QSqlError>
 #include <QSettings>
 
+QString getLastExecutedQuery(const QSqlQuery& query)
+{
+ QString str = query.lastQuery();
+ QMapIterator<QString, QVariant> it(query.boundValues());
+ while (it.hasNext())
+ {
+  it.next();
+  str.replace(it.key(),it.value().toString());
+ }
+ return str;
+}
+
 AccesBDD::AccesBDD(QObject *parent) : QObject(parent)
 {
     QSettings initialisation("config.ini",QSettings::IniFormat);
@@ -99,9 +111,9 @@ void AccesBDD::EnregistrerTemperatureHumidite(const int _idStation, const double
         // insertion normale dans la BDD si il n'y a pas de répétition
         if(!repetition)
         {
+
             requette.prepare("INSERT INTO `TemperatureHumidite` (`horodatage`, `temperature`, `humidite`, `idStation`) "
-                             "VALUES (:horodatage, :temp, :hum, :station);");
-            requette.bindValue(":horodatage",horodatageActuelle);
+                             "VALUES (now(), :temp, :hum, :station);");
             requette.bindValue(":temp",_temperature);
             requette.bindValue(":hum",_humidite);
             requette.bindValue(":station",_idStation);
@@ -110,6 +122,8 @@ void AccesBDD::EnregistrerTemperatureHumidite(const int _idStation, const double
                 qDebug() << requette.lastQuery();
                 qDebug() << horodatageActuelle << " - " << _temperature << " - " << _humidite;
                 qDebug() << "Problème dans la requette EnregistrerTemperatureHumidite 3" ;
+                qDebug() << getLastExecutedQuery(requette);
+                qDebug() << bddMeteo.lastError();
             }
         }
     }
@@ -138,5 +152,10 @@ void AccesBDD::EnregistrerVent(const int _idStation, const double _vitesse, cons
 
         }
     }
+
+}
+
+void AccesBDD::ActualiserEtatBatterie(const int _idStation, const bool _etat)
+{
 
 }

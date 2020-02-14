@@ -15,6 +15,7 @@ public:
     ~AccesBDD();
     void EnregistrerTemperatureHumidite(const int _idStation, const double _temperature, const int _humidite);
     void EnregistrerVent(const int _idStation,const double _vitesse,const int _direction, const double _rafale);
+    void ActualiserEtatBatterie(const int _idStation, const bool _etat);
 
 signals:
 

@@ -7,7 +7,7 @@
 class TrameWS1080: public Trame
 {
 public:
-    TrameWS1080(const QJsonObject _jsonObject);
+    TrameWS1080(const int _idStationBdd, const QJsonObject _jsonObject);
     TrameWS1080();
     TrameWS1080(const TrameWS1080 &autre);
     double getTemperature() const;

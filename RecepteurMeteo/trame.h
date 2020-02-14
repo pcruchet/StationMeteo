@@ -10,19 +10,17 @@ class Trame
 {
 public:
     Trame();
-    explicit Trame(const QJsonObject _jsonObject);
+    explicit Trame(const int _idStationBdd, const QJsonObject _jsonObject);
     Trame(const Trame &autre);
     int getIdStation() const;
     QDateTime getHorodatage() const;
-    QString getBatterie() const;
     QString getModele() const;
     virtual QString getTrameAfficheur() = 0 ;
     virtual ~Trame();
 
 protected:
-    int idStation;
+    int idStationBdd;
     QDateTime horodatage;
-    QString batterie;
     QString modele;
 };
 

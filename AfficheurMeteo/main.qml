@@ -22,7 +22,7 @@ Window {
 
     WebSocket {
         id: socket
-        url: "ws://192.168.1.22:7777"
+        url: "ws://127.0.0.1:7777"
         onTextMessageReceived: {
             console.log(message);
             var obj=JSON.parse(message);

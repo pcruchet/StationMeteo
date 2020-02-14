@@ -1,7 +1,7 @@
 #include "tramews1080.h"
 
-TrameWS1080::TrameWS1080(const QJsonObject _jsonObject):
-    Trame (_jsonObject)
+TrameWS1080::TrameWS1080(const int _idStationBdd, const QJsonObject _jsonObject):
+    Trame (_idStationBdd,_jsonObject)
 {
     temperature = _jsonObject.value(QString("temperature_C")).toDouble() ;
     humidite    = _jsonObject.value(QString("humidity")).toInt();
@@ -24,7 +24,7 @@ TrameWS1080::TrameWS1080() :
 TrameWS1080::TrameWS1080(const TrameWS1080 &autre):
     Trame ()
 {
-    idStation = autre.idStation;
+    idStationBdd = autre.idStationBdd;
     horodatage = autre.horodatage;
     batterie = autre.batterie;
     modele = autre.modele;
@@ -68,7 +68,7 @@ double TrameWS1080::getPluie() const
 
 QString TrameWS1080::getTrameAfficheur()
 {
-    QString id  = QString::number(idStation);
+    QString id  = QString::number(idStationBdd);
     QString tem = QString::number(temperature,'f',1);
     QString hum = QString::number(humidite);
     QString plu = QString::number(pluie);
