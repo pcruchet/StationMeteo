@@ -4,7 +4,6 @@ Trame::Trame()
 {
     idStationBdd = 0;
     horodatage = QDateTime();
-    batterie = "";
     modele = "" ;
 }
 

@@ -47,6 +47,7 @@ private:
     int idStationExterieure;
     int idStationSerre;
     int delaiBdd;
+    bool bddSerre;
 };
 
 #endif // RECEPTEURRTL_433_H

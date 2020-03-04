@@ -19,14 +19,21 @@ RecepteurRTL_433::RecepteurRTL_433(QObject *parent) :
     leServeur(nullptr),
     stationExterieure(STATION_1,laBdd),
     stationSerre(STATION_3,laBdd),
-    delaiBdd(15)
+    bddSerre(false)
 {
-    QSettings initialisation("config.ini",QSettings::IniFormat);
-    commande = initialisation.value("Recepteur/commande").toString();
-    int port = initialisation.value("ServeurMeteo/port").toInt();
-    idStationExterieure = initialisation.value("Station1/id").toInt();
-    idStationSerre = initialisation.value("Station2/id").toInt();
-    delaiBdd = initialisation.value("ServeurMeteo/delai").toInt();
+    int port;
+    QFileInfo testFichier("config.ini");
+    if(testFichier.exists() && testFichier.isFile())
+    {
+        qDebug() << "FichierIni Ok";
+        QSettings initialisation("config.ini",QSettings::IniFormat);
+
+        commande = initialisation.value("Recepteur/commande","/home/pi/StationMeteo/build-rtl_433-Desktop-Defaut/src/rtl_433").toString();
+        port = initialisation.value("ServeurMeteo/port",7777).toInt();
+        idStationExterieure = initialisation.value("Station1/id",71).toInt();
+        idStationSerre = initialisation.value("Station2/id",154).toInt();
+        delaiBdd = initialisation.value("ServeurMeteo/delai",15).toInt();
+    }
 
     leServeur = new ServeurMeteo(static_cast<quint16>(port));
     process = new QProcess(this);
@@ -59,6 +66,7 @@ RecepteurRTL_433::~RecepteurRTL_433()
  */
 void RecepteurRTL_433::LancerEcoute()
 {
+    qDebug() << "LancerEcoute";
     QStringList arguments;
     arguments << "-R" << "32" << "-R" << "12" << "-F" << "json";
     if(!process->isTransactionStarted())
@@ -71,6 +79,7 @@ void RecepteurRTL_433::LancerEcoute()
  */
 void RecepteurRTL_433::TraiterTrame()
 {
+    //qDebug() << "TraiterTrame";
     QByteArray sortieStandard = process->readAllStandardOutput();
     int indice = 0;
     while(sortieStandard[indice] != '}' && indice < sortieStandard.count())
@@ -134,6 +143,15 @@ void RecepteurRTL_433::TraiterErreurProcess(QProcess::ProcessError _erreur)
 
 void RecepteurRTL_433::on_timeoutTimerBdd()
 {
-    stationExterieure.EnregistrerMesures();
-    stationSerre.EnregistrerMesures();
+    if(bddSerre)
+    {
+        stationSerre.EnregistrerMesures();
+        bddSerre = false;
+    }
+    else
+    {
+        stationExterieure.EnregistrerMesures();
+        bddSerre = true;
+    }
+
 }

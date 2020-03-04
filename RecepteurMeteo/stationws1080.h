@@ -31,6 +31,10 @@ private:
     int cumulHumidite;
     int nbMesures;
 
+    double cumulPluie;
+    double anciennePluie;
+    QDateTime debutPluie;
+
     AccesBDD &bdd;
 };
 

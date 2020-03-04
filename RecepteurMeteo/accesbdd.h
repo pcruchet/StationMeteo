@@ -22,6 +22,7 @@ signals:
 public slots:
 private:
     QSqlDatabase bddMeteo;
+
 };
 
 #endif // ACCESBDD_H

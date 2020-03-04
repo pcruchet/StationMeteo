@@ -12,9 +12,7 @@ StationTHGR221::StationTHGR221(const int _idStation, AccesBDD &_bdd, QObject *pa
 
 void StationTHGR221::AjouterMesures(const TrameOregon _laTrame)
 {
-    if(_laTrame.getBatterie() != "OK")
-        emit BatterieFaible(idStation);
-    cumulHumidite += _laTrame.getHumidite();
+     cumulHumidite += _laTrame.getHumidite();
     cumulTemperature += _laTrame.getTemperature();
     nbMesures++;
 }

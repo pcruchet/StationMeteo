@@ -3,26 +3,41 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QSettings>
+#include <QFileInfo>
 
 QString getLastExecutedQuery(const QSqlQuery& query)
 {
- QString str = query.lastQuery();
- QMapIterator<QString, QVariant> it(query.boundValues());
- while (it.hasNext())
- {
-  it.next();
-  str.replace(it.key(),it.value().toString());
- }
- return str;
+    QString str = query.lastQuery();
+    QMapIterator<QString, QVariant> it(query.boundValues());
+    while (it.hasNext())
+    {
+        it.next();
+        str.replace(it.key(),it.value().toString());
+    }
+    return str;
 }
 
 AccesBDD::AccesBDD(QObject *parent) : QObject(parent)
 {
-    QSettings initialisation("config.ini",QSettings::IniFormat);
-    QString serveur = initialisation.value("BaseDeDonnees/serveur").toString();
-    QString utilisateur = initialisation.value("BaseDeDonnees/utilisateur").toString();
-    QString motDePasse = initialisation.value("BaseDeDonnees/motDePasse").toString();
-    QString base = initialisation.value("BaseDeDonnees/base").toString();
+
+    QFileInfo testFichier("config.ini");
+    QString serveur ;
+    QString utilisateur ;
+    QString motDePasse ;
+    QString base ;
+    if(testFichier.exists() && testFichier.isFile())
+    {
+        qDebug() << "FichierIni Ok";
+        QSettings initialisation("config.ini",QSettings::IniFormat);
+        serveur = initialisation.value("BaseDeDonnees/serveur","127.0.0.1").toString();
+        utilisateur = initialisation.value("BaseDeDonnees/utilisateur","philippe").toString();
+        motDePasse = initialisation.value("BaseDeDonnees/motDePasse","123").toString();
+        base = initialisation.value("BaseDeDonnees/base","Meteo").toString();
+    }
+    else
+    {
+        qDebug() << "Erreur lecture fichier ini";
+    }
 
     bddMeteo =  QSqlDatabase::addDatabase(("QMYSQL"));
     bddMeteo.setHostName(serveur);
@@ -47,14 +62,14 @@ AccesBDD::~AccesBDD()
 }
 
 /**
- * @brief AccesBDD::EnregistrerTemperatureHumidite
- * @param _idStation    Identifiant de la station
- * @param _temperature  Valeur de la température
- * @param _humidite     Valeur de l'humidité
- *
- * @details Enregistre la température et l'humidité de l'air en évitant les doublons
- *          dans la base de données
- */
+         * @brief AccesBDD::EnregistrerTemperatureHumidite
+         * @param _idStation    Identifiant de la station
+         * @param _temperature  Valeur de la température
+         * @param _humidite     Valeur de l'humidité
+         *
+         * @details Enregistre la température et l'humidité de l'air en évitant les doublons
+         *          dans la base de données
+         */
 void AccesBDD::EnregistrerTemperatureHumidite(const int _idStation, const double _temperature, const int _humidite)
 {
     if(bddMeteo.isOpen())
@@ -69,6 +84,8 @@ void AccesBDD::EnregistrerTemperatureHumidite(const int _idStation, const double
         if(!requette.exec())
         {
             qDebug() << "Problème dans la requette EnregistrerTemperatureHumidite 1" ;
+            qDebug() << getLastExecutedQuery(requette);
+            qDebug() << bddMeteo.lastError();
         }
         int nbLignes = requette.size();
         if(nbLignes == 2)
@@ -104,7 +121,14 @@ void AccesBDD::EnregistrerTemperatureHumidite(const int _idStation, const double
                 if(!requette.exec())
                 {
                     qDebug() << "Problème dans la requette EnregistrerTemperatureHumidite 2" ;
+                    qDebug() << getLastExecutedQuery(requette);
+                    qDebug() << bddMeteo.lastError();
                 }
+                else
+                {
+                    qDebug() << getLastExecutedQuery(requette);
+                }
+
             }
         }
 
@@ -125,6 +149,11 @@ void AccesBDD::EnregistrerTemperatureHumidite(const int _idStation, const double
                 qDebug() << getLastExecutedQuery(requette);
                 qDebug() << bddMeteo.lastError();
             }
+            else
+            {
+                qDebug() << getLastExecutedQuery(requette);
+            }
+
         }
     }
     else

@@ -26,7 +26,6 @@ TrameWS1080::TrameWS1080(const TrameWS1080 &autre):
 {
     idStationBdd = autre.idStationBdd;
     horodatage = autre.horodatage;
-    batterie = autre.batterie;
     modele = autre.modele;
     temperature = autre.temperature;
     humidite = autre.humidite;
