@@ -5,6 +5,7 @@
 #include <QSqlDatabase>
 #include <QDateTime>
 #include "temperaturehumidite.h"
+#include "vent.h"
 
 
 class AccesBDD : public QObject

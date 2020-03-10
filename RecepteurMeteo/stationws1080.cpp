@@ -48,9 +48,9 @@ bool StationWS1080::EnregistrerMesures()
         bdd.EnregistrerTemperatureHumidite(idStation,latemperture,lHumidite);
         cumulHumidite=0;
         cumulTemperature=0;
-        nbMesures = 0;      
+        nbMesures = 0;
         retour = true;
-     }
+    }
     return retour;
 }
 

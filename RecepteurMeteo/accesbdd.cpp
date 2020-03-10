@@ -62,14 +62,14 @@ AccesBDD::~AccesBDD()
 }
 
 /**
-         * @brief AccesBDD::EnregistrerTemperatureHumidite
-         * @param _idStation    Identifiant de la station
-         * @param _temperature  Valeur de la température
-         * @param _humidite     Valeur de l'humidité
-         *
-         * @details Enregistre la température et l'humidité de l'air en évitant les doublons
-         *          dans la base de données
-         */
+ * @brief AccesBDD::EnregistrerTemperatureHumidite
+ * @param _idStation    Identifiant de la station
+ * @param _temperature  Valeur de la température
+ * @param _humidite     Valeur de l'humidité
+ *
+ * @details Enregistre la température et l'humidité de l'air en évitant les doublons
+ *          dans la base de données
+ */
 void AccesBDD::EnregistrerTemperatureHumidite(const int _idStation, const double _temperature, const int _humidite)
 {
     if(bddMeteo.isOpen())
@@ -161,24 +161,34 @@ void AccesBDD::EnregistrerTemperatureHumidite(const int _idStation, const double
         qDebug() << "La base de données n'est pas ouverte ";
     }
 }
-
+/**
+ * @brief AccesBDD::EnregistrerVent
+ * @param _idStation    Identifiant de la station
+ * @param _vitesse      Valeur de la vitesse du vent en m/s
+ * @param _direction    Valeur de la direction du vent en degré
+ * @param _rafale       Valeur de la plus grosse rafale en m/s
+ *
+ * @details Enregistre la vitesse du vent et sa direction ainsi que la vitesse de
+ *          la plus grosse rafal sur la période.
+ *
+ */
 void AccesBDD::EnregistrerVent(const int _idStation, const double _vitesse, const int _direction, const double _rafale)
 {
     if(bddMeteo.isOpen())
     {
-        QDateTime horodatageActuelle = QDateTime::currentDateTime();
         QSqlQuery requette(bddMeteo.database());
-        requette.prepare("SELECT * FROM Vent WHERE idStation = :id ORDER BY horodatage DESC LIMIT 0,2 ");
-        requette.bindValue(":id",_idStation);
-        bool repetition = false;
+        requette.prepare("INSERT INTO `Vent` (`horodatage`, `vitesse`, `direction`, `rafale`,`idStation`) "
+                         "VALUES (now(), :vVent, :dVent, :rVent, :station);");
+        requette.bindValue(":vVent",_vitesse);
+        requette.bindValue(":dVent",_direction);
+        requette.bindValue(":rVent",_rafale);
+        requette.bindValue(":station",_idStation);
         if(!requette.exec())
         {
-            qDebug() << "Problème dans la requette EnregistrerTemperatureHumidite 1" ;
-        }
-        int nbLignes = requette.size();
-        if(nbLignes == 2)
-        {
-
+            qDebug() << requette.lastQuery();
+            qDebug() << "Problème dans la requette EnregistrerVent" ;
+            qDebug() << getLastExecutedQuery(requette);
+            qDebug() << bddMeteo.lastError();
         }
     }
 

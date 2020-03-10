@@ -6,10 +6,11 @@ class Vent
 {
 public:
     Vent(const double _vitesse, const int _direction, const double _rafale);
+    bool operator==(const Vent &autre) ;
 protected:
     double vitesse;
-    double rafale;
     int    direction;
+    double rafale;
     int    nbMesures;
 };
 
