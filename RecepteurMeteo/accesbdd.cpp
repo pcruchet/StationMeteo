@@ -190,8 +190,96 @@ void AccesBDD::EnregistrerVent(const int _idStation, const double _vitesse, cons
             qDebug() << getLastExecutedQuery(requette);
             qDebug() << bddMeteo.lastError();
         }
+        else
+        {
+            qDebug() << getLastExecutedQuery(requette);
+        }
     }
 
+}
+
+void AccesBDD::EnregistrerPluie(const int _idStation, const double _pluie)
+{
+    if(bddMeteo.isOpen())
+    {
+        QDateTime horodatageActuelle = QDateTime::currentDateTime();
+        QSqlQuery requette(bddMeteo.database());
+
+        // récupération des deux dernières valeurs enregistrées
+        requette.prepare("SELECT * FROM Pluie WHERE idStation = :id ORDER BY horodatage DESC LIMIT 0,2 ");
+        requette.bindValue(":id",_idStation);
+        bool repetition = false;
+        if(!requette.exec())
+        {
+            qDebug() << "Problème dans la requette EnregistrerPluie 1" ;
+            qDebug() << getLastExecutedQuery(requette);
+            qDebug() << bddMeteo.lastError();
+        }
+        int nbLignes = requette.size();
+        if(nbLignes == 2)
+        {
+
+            QDateTime horodatage ;
+
+            double valeurs[2];
+            if(requette.first())
+            {
+                horodatage = requette.value("horodatage").toDateTime();
+                valeurs[0] = requette.value("quantite").toDouble();
+            }
+            if(requette.last())
+            {
+                valeurs[1] = requette.value("quantite").toDouble();
+            }
+
+            // si la nouvelle valeur est identique au deux dernières valeurs enregistrées
+            if(valeurs[0] == _pluie && valeurs[0] == valeurs[1])
+            {
+                requette.prepare("UPDATE pluie SET horodatage = :nouvelle WHERE horodatage = :ancienne AND idStation = :id");
+                requette.bindValue(":nouvelle", horodatageActuelle);
+                requette.bindValue(":ancienne",horodatage);
+                requette.bindValue(":id",_idStation);
+
+                repetition = true;
+                if(!requette.exec())
+                {
+                    qDebug() << "Problème dans la requette EnregistrerPluie 2" ;
+                    qDebug() << getLastExecutedQuery(requette);
+                    qDebug() << bddMeteo.lastError();
+                }
+                else
+                {
+                    qDebug() << getLastExecutedQuery(requette);
+                }
+            }
+        }
+
+        // insertion normale dans la BDD si il n'y a pas de répétition
+        if(!repetition)
+        {
+
+            requette.prepare("INSERT INTO `Pluie` (`horodatage`, `quantite`, `idStation`) "
+                             "VALUES (now(), :qte, :station);");
+            requette.bindValue(":qte",_pluie);
+            requette.bindValue(":station",_idStation);
+            if(!requette.exec())
+            {
+                qDebug() << requette.lastQuery();
+                qDebug() << horodatageActuelle << " - " << _pluie ;
+                qDebug() << "Problème dans la requette EnregistrerPluie 3" ;
+                qDebug() << getLastExecutedQuery(requette);
+                qDebug() << bddMeteo.lastError();
+            }
+            else
+            {
+                qDebug() << getLastExecutedQuery(requette);
+            }
+        }
+    }
+    else
+    {
+        qDebug() << "La base de données n'est pas ouverte ";
+    }
 }
 
 void AccesBDD::ActualiserEtatBatterie(const int _idStation, const bool _etat)

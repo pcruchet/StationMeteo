@@ -65,6 +65,11 @@ double TrameWS1080::getPluie() const
     return pluie;
 }
 
+void TrameWS1080::setPluie(double value)
+{
+    pluie = value;
+}
+
 QString TrameWS1080::getTrameAfficheur()
 {
     QString id  = QString::number(idStationBdd);
@@ -81,3 +86,4 @@ QString TrameWS1080::getTrameAfficheur()
 
     return json;
 }
+

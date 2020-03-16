@@ -21,7 +21,7 @@ RecepteurRTL_433::RecepteurRTL_433(QObject *parent) :
     stationSerre(STATION_3,laBdd),
     bddSerre(false)
 {
-    int port;
+    int port = 7777;
     QFileInfo testFichier("config.ini");
     if(testFichier.exists() && testFichier.isFile())
     {
@@ -105,7 +105,7 @@ void RecepteurRTL_433::TraiterTrame()
         QMultiMap<int,QDateTime>::iterator it = lesTramesDesStations.find(idStation);
         if (it != lesTramesDesStations.end())
         {
-            if(it.value().secsTo(horodatage)>50) // une trame toutes les 58 secondes
+            if(it.value().secsTo(horodatage)>35) // une trame toutes les 58 secondes Extérieur 40 secondes serre
             {
                 lesTramesDesStations.remove(idStation);
                 trameValide = true;
@@ -122,15 +122,15 @@ void RecepteurRTL_433::TraiterTrame()
             {
                 lesTramesDesStations.insert(idStation,horodatage);
                 trameStation1 = TrameWS1080(STATION_1,jsonObject);
-                leServeur->EnvoyerMessageTexte(trameStation1.getTrameAfficheur());
                 stationExterieure.AjouterMesures(trameStation1);
+                leServeur->EnvoyerMessageTexte(trameStation1.getTrameAfficheur());
             }
             else if (idStation == idStationSerre)
             {
                 lesTramesDesStations.insert(idStation,horodatage);
                 trameStation3 = TrameOregon(STATION_3,jsonObject);
-                leServeur->EnvoyerMessageTexte(trameStation3.getTrameAfficheur());
                 stationSerre.AjouterMesures(trameStation3);
+                leServeur->EnvoyerMessageTexte(trameStation3.getTrameAfficheur());
             }
         }
     }
