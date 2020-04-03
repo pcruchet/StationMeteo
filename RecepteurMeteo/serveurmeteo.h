@@ -16,6 +16,7 @@ public:
     void EnvoyerMessageTexte(QString message);
 
 signals:
+    void nouvelleConnexionClient();
 
 private slots:
     void onNewConnection();
@@ -25,6 +26,7 @@ private:
     QWebSocketServer *m_pWebSocketServer;
     QList<QWebSocket *> m_clients;
     QString dernierMessage;
+
 };
 
 #endif // SERVEURMETEO_H

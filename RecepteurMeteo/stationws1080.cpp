@@ -1,4 +1,5 @@
 #include "stationws1080.h"
+#include "sleeperthread.h"
 #include <QDebug>
 
 StationWS1080::StationWS1080(const int _idStation,AccesBDD &_bdd, QObject *parent) :
@@ -37,7 +38,6 @@ void StationWS1080::AjouterMesures(TrameWS1080 &_laTrame)
             direction.insert(_laTrame.getDirectionVent(),1);     //initialisation du compteur
         else
             itDirection.value() += 1;
-        qDebug() << direction ;
         nbMesuresVent++;
     }
 
@@ -46,23 +46,24 @@ void StationWS1080::AjouterMesures(TrameWS1080 &_laTrame)
 
 }
 
-bool StationWS1080::EnregistrerMesures()
+bool StationWS1080::EnregistrerTemperatureHumiditeVent()
 {
     bool retour = false;
     if(nbMesures > 0)
     {
-        QDateTime heureCourante(QDateTime::currentDateTime());
-        if(QDateTime::currentDateTime().toMSecsSinceEpoch() - debutPluie.toMSecsSinceEpoch() > 60 * 60 * 1000)
-        {
-
-        }
+        // Température - himidité
         double latemperture = cumulTemperature / static_cast<double>(nbMesures);
         int lHumidite = cumulHumidite / nbMesures ;
-        bdd.EnregistrerTemperatureHumidite(idStation,latemperture,lHumidite);
+        int compteur=0;
+        while(compteur < 3 && !bdd.EnregistrerTemperatureHumidite(idStation,latemperture,lHumidite))
+        {
+            SleeperThread::msleep(400);     // attente de la fin des écritures dans la bdd
+            qDebug() << ++compteur;
+        }
         cumulHumidite=0;
         cumulTemperature=0;
-        // enregistrement du vent
 
+        // enregistrement du vent
         if(nbMesuresVent > 0)
         {
             int valeurMaxi = 0;
@@ -86,6 +87,18 @@ bool StationWS1080::EnregistrerMesures()
         retour = true;
     }
     return retour;
+}
+
+void StationWS1080::EnregistrerPluie()
+{
+    qDebug() << "EnregistrerPluie ";
+    double quantite = cumulPluie.ObtenirCumul();
+    int compteur=0;
+    while(compteur < 3 &&  !bdd.EnregistrerPluie(idStation,quantite))
+    {
+        SleeperThread::msleep(400);
+        qDebug() << ++compteur;
+    }
 }
 
 

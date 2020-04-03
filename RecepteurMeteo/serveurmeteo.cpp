@@ -24,8 +24,7 @@ void ServeurMeteo::onNewConnection()
     connect(pSocket,&QWebSocket::disconnected,this,&ServeurMeteo::socketDisconnected);
     m_clients << pSocket ;
     qDebug() << "Connexion d'un client";
-    if(!dernierMessage.isEmpty())
-        EnvoyerMessageTexte(dernierMessage);
+    emit nouvelleConnexionClient();
 }
 
 void ServeurMeteo::EnvoyerMessageTexte(QString message)

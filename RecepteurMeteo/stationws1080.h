@@ -17,7 +17,8 @@ public:
     int getNbMesures() const;
 
     void AjouterMesures(TrameWS1080 &_laTrame);
-    bool EnregistrerMesures();
+    bool EnregistrerTemperatureHumiditeVent();
+    void EnregistrerPluie();
 
 signals:
     void BatterieFaible(int station);

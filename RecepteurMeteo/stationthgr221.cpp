@@ -1,4 +1,6 @@
+#include <QDebug>
 #include "stationthgr221.h"
+#include "sleeperthread.h"
 
 StationTHGR221::StationTHGR221(const int _idStation, AccesBDD &_bdd, QObject *parent) :
     QObject(parent),
@@ -24,7 +26,12 @@ bool StationTHGR221::EnregistrerMesures()
     {
         double latemperture = cumulTemperature / static_cast<double>(nbMesures);
         int lHumidite = cumulHumidite / nbMesures ;
-        bdd.EnregistrerTemperatureHumidite(idStation,latemperture,lHumidite);
+        int compteur = 0;
+        while(!bdd.EnregistrerTemperatureHumidite(idStation,latemperture,lHumidite))
+        {
+            SleeperThread::msleep(500);
+            qDebug() << ++compteur;
+        }
         cumulHumidite=0;
         cumulTemperature=0;
         nbMesures = 0;

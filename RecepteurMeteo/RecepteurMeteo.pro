@@ -27,7 +27,9 @@ SOURCES += \
     serveurmeteo.cpp \
     tramews1080.cpp \
     vent.cpp \
-    pluie.cpp
+    pluie.cpp \
+    sleeperthread.cpp \
+    timerprogramme.cpp
 
 HEADERS += \
     recepteurrtl_433.h \
@@ -40,7 +42,9 @@ HEADERS += \
     serveurmeteo.h \
     tramews1080.h \
     vent.h \
-    pluie.h
+    pluie.h \
+    sleeperthread.h \
+    timerprogramme.h
 
 DISTFILES += \
     config.ini

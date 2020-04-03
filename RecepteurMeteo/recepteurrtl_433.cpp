@@ -36,13 +36,16 @@ RecepteurRTL_433::RecepteurRTL_433(QObject *parent) :
     }
 
     leServeur = new ServeurMeteo(static_cast<quint16>(port));
-    process = new QProcess(this);
+    connect(leServeur,&ServeurMeteo::nouvelleConnexionClient,this,&RecepteurRTL_433::on_nouvelleConnexionClient);
 
+    process = new QProcess(this);
     connect(process,&QProcess::readyReadStandardOutput,this,&RecepteurRTL_433::TraiterTrame);
     connect(process,&QProcess::errorOccurred,this,&RecepteurRTL_433::TraiterErreurProcess);
-    connect(&timerBDD,&QTimer::timeout,this,&RecepteurRTL_433::on_timeoutTimerBdd);
 
-    timerBDD.start(delaiBdd*60*1000);
+    timerBDD = new TimerProgramme(TimerProgramme::uneDemiHeure);
+    connect(timerBDD,&QTimer::timeout,this,&RecepteurRTL_433::on_timeoutTimerBdd);
+    timerPluie = new TimerProgramme(TimerProgramme::uneHeure);
+    connect(timerPluie,&QTimer::timeout,this,&RecepteurRTL_433::on_timeoutTimerPluie);
 
 }
 
@@ -115,8 +118,8 @@ void RecepteurRTL_433::TraiterTrame()
 
         if(trameValide)
         {
-            TrameWS1080 trameStation1;
-            TrameOregon trameStation3;
+//            TrameWS1080 trameStation1;
+//            TrameOregon trameStation3;
 
             if(idStation == idStationExterieure)
             {
@@ -143,15 +146,25 @@ void RecepteurRTL_433::TraiterErreurProcess(QProcess::ProcessError _erreur)
 
 void RecepteurRTL_433::on_timeoutTimerBdd()
 {
-    if(bddSerre)
-    {
-        stationSerre.EnregistrerMesures();
-        bddSerre = false;
-    }
-    else
-    {
-        stationExterieure.EnregistrerMesures();
-        bddSerre = true;
-    }
+    stationExterieure.EnregistrerTemperatureHumiditeVent();
+    stationSerre.EnregistrerMesures();
+}
+
+void RecepteurRTL_433::on_timeoutTimerPluie()
+{
+    stationExterieure.EnregistrerPluie();
+}
+
+void RecepteurRTL_433::on_nouvelleConnexionClient()
+{
+    if(trameStation3.getIdStation() == STATION_3)
+        leServeur->EnvoyerMessageTexte(trameStation3.getTrameAfficheur());
+    if(trameStation1.getIdStation() == STATION_1)
+        leServeur->EnvoyerMessageTexte(trameStation1.getTrameAfficheur());
+}
+
+void RecepteurRTL_433::on_batterieFaible(int _idStation)
+{
 
 }
+
