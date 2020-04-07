@@ -4,8 +4,10 @@
 #include <QObject>
 #include <QDateTime>
 #include <QJsonObject>
+#include <QMap>
 #include "tramews1080.h"
 #include "accesbdd.h"
+#include "pluie.h"
 
 class StationWS1080 : public QObject
 {
@@ -14,8 +16,9 @@ public:
     explicit StationWS1080(const int _idStation, AccesBDD &_bdd, QObject *parent = nullptr);
     int getNbMesures() const;
 
-    void AjouterMesures(const TrameWS1080 _laTrame);
-    bool EnregistrerMesures();
+    void AjouterMesures(TrameWS1080 &_laTrame);
+    bool EnregistrerTemperatureHumiditeVent();
+    void EnregistrerPluie();
 
 signals:
     void BatterieFaible(int station);
@@ -31,9 +34,13 @@ private:
     int cumulHumidite;
     int nbMesures;
 
-    double cumulPluie;
-    double anciennePluie;
+    int nbMesuresVent;
+    double rafale;
+    double cumulVitesseVent;
+    QMap<int,int> direction;
+
     QDateTime debutPluie;
+    Pluie cumulPluie;
 
     AccesBDD &bdd;
 };

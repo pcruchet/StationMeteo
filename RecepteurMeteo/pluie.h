@@ -13,6 +13,7 @@ public:
 private:
     QMap <QDateTime,double> cumul;
     int periode;
+    double ancienneValeur;
 };
 
 #endif // PLUIE_H

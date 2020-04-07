@@ -15,7 +15,9 @@ public:
     int getDirectionVent() const;
     double getVitesseVent() const;
     double getRafale() const;
-    double getPluie() const;
+    double getPluie() const;   
+    void setPluie(double value);
+
     QString getTrameAfficheur();
 
 protected:

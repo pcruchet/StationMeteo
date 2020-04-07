@@ -70,10 +70,12 @@ AccesBDD::~AccesBDD()
  * @details Enregistre la température et l'humidité de l'air en évitant les doublons
  *          dans la base de données
  */
-void AccesBDD::EnregistrerTemperatureHumidite(const int _idStation, const double _temperature, const int _humidite)
+bool AccesBDD::EnregistrerTemperatureHumidite(const int _idStation, const double _temperature, const int _humidite)
 {
+    bool retour = false;
     if(bddMeteo.isOpen())
     {
+        while(!bddMeteo.transaction());
         QDateTime horodatageActuelle = QDateTime::currentDateTime();
         QSqlQuery requette(bddMeteo.database());
 
@@ -123,10 +125,13 @@ void AccesBDD::EnregistrerTemperatureHumidite(const int _idStation, const double
                     qDebug() << "Problème dans la requette EnregistrerTemperatureHumidite 2" ;
                     qDebug() << getLastExecutedQuery(requette);
                     qDebug() << bddMeteo.lastError();
+                    bddMeteo.rollback();
                 }
                 else
                 {
                     qDebug() << getLastExecutedQuery(requette);
+                    bddMeteo.commit();
+                    retour = true;
                 }
 
             }
@@ -148,18 +153,21 @@ void AccesBDD::EnregistrerTemperatureHumidite(const int _idStation, const double
                 qDebug() << "Problème dans la requette EnregistrerTemperatureHumidite 3" ;
                 qDebug() << getLastExecutedQuery(requette);
                 qDebug() << bddMeteo.lastError();
+                bddMeteo.rollback();
             }
             else
             {
                 qDebug() << getLastExecutedQuery(requette);
+                bddMeteo.commit();
+                retour = true;
             }
-
         }
     }
     else
     {
         qDebug() << "La base de données n'est pas ouverte ";
     }
+    return retour;
 }
 /**
  * @brief AccesBDD::EnregistrerVent
@@ -190,11 +198,147 @@ void AccesBDD::EnregistrerVent(const int _idStation, const double _vitesse, cons
             qDebug() << getLastExecutedQuery(requette);
             qDebug() << bddMeteo.lastError();
         }
+        else
+        {
+            qDebug() << getLastExecutedQuery(requette);
+        }
     }
 
 }
 
-void AccesBDD::ActualiserEtatBatterie(const int _idStation, const bool _etat)
+bool AccesBDD::EnregistrerPluie(const int _idStation, const double _pluie)
 {
+    bool retour = false;
+    if(bddMeteo.isOpen())
+    {
+        while(!bddMeteo.transaction());
+        QDateTime horodatageActuelle = QDateTime::currentDateTime();
+        QSqlQuery requette(bddMeteo.database());
 
+        // récupération des deux dernières valeurs enregistrées
+        requette.prepare("SELECT * FROM Pluie WHERE idStation = :id ORDER BY horodatage DESC LIMIT 0,2 ");
+        requette.bindValue(":id",_idStation);
+        bool repetition = false;
+        if(!requette.exec())
+        {
+            bddMeteo.rollback();
+            qDebug() << "Problème dans la requette EnregistrerPluie 1" ;
+            qDebug() << getLastExecutedQuery(requette);
+            qDebug() << bddMeteo.lastError();
+        }
+        int nbLignes = requette.size();
+        if(nbLignes == 2)
+        {
+
+            QDateTime horodatage ;
+
+            double valeurs[2];
+            if(requette.first())
+            {
+                horodatage = requette.value("horodatage").toDateTime();
+                valeurs[0] = requette.value("quantite").toDouble();
+            }
+            if(requette.last())
+            {
+                valeurs[1] = requette.value("quantite").toDouble();
+            }
+
+            // si la nouvelle valeur est identique au deux dernières valeurs enregistrées
+            if(valeurs[0] == _pluie && valeurs[0] == valeurs[1])
+            {
+                requette.prepare("UPDATE Pluie SET horodatage = :nouvelle WHERE horodatage = :ancienne AND idStation = :id");
+                requette.bindValue(":nouvelle", horodatageActuelle);
+                requette.bindValue(":ancienne",horodatage);
+                requette.bindValue(":id",_idStation);
+
+                repetition = true;
+                if(!requette.exec())
+                {
+                    qDebug() << "Problème dans la requette EnregistrerPluie 2" ;
+                    qDebug() << getLastExecutedQuery(requette);
+                    qDebug() << bddMeteo.lastError();
+                    bddMeteo.rollback();
+                }
+                else
+                {
+                    qDebug() << getLastExecutedQuery(requette);
+                    bddMeteo.commit();
+                    retour = true;
+                }
+            }
+        }
+
+        // insertion normale dans la BDD si il n'y a pas de répétition
+        if(!repetition)
+        {
+
+            requette.prepare("INSERT INTO `Pluie` (`horodatage`, `quantite`, `idStation`) "
+                             "VALUES (now(), :qte, :station);");
+            requette.bindValue(":qte",_pluie);
+            requette.bindValue(":station",_idStation);
+            if(!requette.exec())
+            {
+                qDebug() << requette.lastQuery();
+                qDebug() << horodatageActuelle << " - " << _pluie ;
+                qDebug() << "Problème dans la requette EnregistrerPluie 3" ;
+                qDebug() << getLastExecutedQuery(requette);
+                qDebug() << bddMeteo.lastError();
+                bddMeteo.rollback();
+            }
+            else
+            {
+                qDebug() << getLastExecutedQuery(requette);
+                bddMeteo.commit();
+                retour = true;
+            }
+        }
+    }
+    else
+    {
+        qDebug() << "La base de données n'est pas ouverte ";
+    }
+    return retour;
+}
+
+bool AccesBDD::ActualiserEtatBatterie(const int _idStation, const bool _etat)
+{
+    bool retour = false;
+    if(bddMeteo.isOpen())
+    {
+        while(!bddMeteo.transaction());
+
+        QSqlQuery requette(bddMeteo.database());
+
+        requette.prepare("SELECT * FROM Batterie WHERE idStation = :id ORDER BY horodatage DESC LIMIT 0,1 ");
+        requette.bindValue(":id",_idStation);
+
+        if(!requette.exec())
+        {
+            qDebug() << "Problème dans la requette ActualiserEtatBatterie 1" ;
+            qDebug() << getLastExecutedQuery(requette);
+            qDebug() << bddMeteo.lastError();
+        }
+
+        if((requette.first() && _etat != requette.value("etat").toBool()) || requette.size() == 0)
+        {
+            requette.prepare("INSERT INTO `Batterie` (`horodatage`,`idStation`, 'etat') "
+                             "VALUES (now(),:station), :batterie;");
+            requette.bindValue(":station",_idStation);
+            requette.bindValue(":batterie",_etat);
+            if(!requette.exec())
+            {
+                qDebug() << "Problème dans la requette ActualiserEtatBatterie 2" ;
+                qDebug() << getLastExecutedQuery(requette);
+                qDebug() << bddMeteo.lastError();
+                bddMeteo.rollback();
+            }
+            else
+            {
+                qDebug() << getLastExecutedQuery(requette);
+                bddMeteo.commit();
+                retour = true;
+            }
+        }
+    }
+    return retour;
 }
