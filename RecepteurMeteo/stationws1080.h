@@ -17,8 +17,8 @@ public:
     int getNbMesures() const;
 
     void AjouterMesures(TrameWS1080 &_laTrame);
-    bool EnregistrerTemperatureHumiditeVent();
-    void EnregistrerPluie();
+    bool EnregistrerMesures();
+
 
 signals:
     void BatterieFaible(int station);
@@ -41,6 +41,7 @@ private:
 
     QDateTime debutPluie;
     Pluie cumulPluie;
+
 
     AccesBDD &bdd;
 };

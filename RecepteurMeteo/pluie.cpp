@@ -3,7 +3,7 @@
 
 Pluie::Pluie(const int _periode):
     periode(_periode),
-    ancienneValeur(-1)
+    ancienneValeur(-1.0)
 {
     cumul.clear();
 }
@@ -12,7 +12,7 @@ void Pluie::Ajouter(double _valeur)
 {
     if(ancienneValeur >= 0) // négatif à la mise sous tension
     {
-        if(_valeur >= ancienneValeur)
+        if(_valeur > ancienneValeur)
         {
             QDateTime maintenant(QDateTime::currentDateTime());
             qDebug() << maintenant;

@@ -32,7 +32,6 @@ private slots:
     void TraiterTrame();
     void TraiterErreurProcess(QProcess::ProcessError _erreur);
     void on_timeoutTimerBdd();
-    void on_timeoutTimerPluie();
     void on_nouvelleConnexionClient();
     void on_batterieFaible(int _idStation);
 

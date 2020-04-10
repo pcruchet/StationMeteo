@@ -1,6 +1,7 @@
 #include "stationws1080.h"
 #include "sleeperthread.h"
 #include <QDebug>
+#include <QTime>
 
 StationWS1080::StationWS1080(const int _idStation,AccesBDD &_bdd, QObject *parent) :
     QObject(parent),
@@ -46,9 +47,10 @@ void StationWS1080::AjouterMesures(TrameWS1080 &_laTrame)
 
 }
 
-bool StationWS1080::EnregistrerTemperatureHumiditeVent()
+bool StationWS1080::EnregistrerMesures()
 {
     bool retour = false;
+    QTime heureCourante = QTime::currentTime();
     if(nbMesures > 0)
     {
         // Température - himidité
@@ -83,24 +85,25 @@ bool StationWS1080::EnregistrerTemperatureHumiditeVent()
             direction.clear();
             nbMesuresVent = 0;
         }
+
+
+        if(heureCourante.minute() == 0) // enregistrement du cumul de pluie pendant une heure
+        {
+            double quantite = cumulPluie.ObtenirCumul();
+            int compteur=0;
+            while(compteur < 3 &&  !bdd.EnregistrerPluie(idStation,quantite))
+            {
+                SleeperThread::msleep(400);
+                qDebug() << ++compteur;
+            }
+        }
+
+
         nbMesures = 0;
         retour = true;
     }
     return retour;
 }
-
-void StationWS1080::EnregistrerPluie()
-{
-    qDebug() << "EnregistrerPluie ";
-    double quantite = cumulPluie.ObtenirCumul();
-    int compteur=0;
-    while(compteur < 3 &&  !bdd.EnregistrerPluie(idStation,quantite))
-    {
-        SleeperThread::msleep(400);
-        qDebug() << ++compteur;
-    }
-}
-
 
 
 

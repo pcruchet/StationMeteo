@@ -44,8 +44,6 @@ RecepteurRTL_433::RecepteurRTL_433(QObject *parent) :
 
     timerBDD = new TimerProgramme(TimerProgramme::uneDemiHeure);
     connect(timerBDD,&QTimer::timeout,this,&RecepteurRTL_433::on_timeoutTimerBdd);
-    timerPluie = new TimerProgramme(TimerProgramme::uneHeure);
-    connect(timerPluie,&QTimer::timeout,this,&RecepteurRTL_433::on_timeoutTimerPluie);
 
 }
 
@@ -82,8 +80,8 @@ void RecepteurRTL_433::LancerEcoute()
  */
 void RecepteurRTL_433::TraiterTrame()
 {
-    //qDebug() << "TraiterTrame";
     QByteArray sortieStandard = process->readAllStandardOutput();
+
     int indice = 0;
     while(sortieStandard[indice] != '}' && indice < sortieStandard.count())
     {
@@ -118,9 +116,6 @@ void RecepteurRTL_433::TraiterTrame()
 
         if(trameValide)
         {
-//            TrameWS1080 trameStation1;
-//            TrameOregon trameStation3;
-
             if(idStation == idStationExterieure)
             {
                 lesTramesDesStations.insert(idStation,horodatage);
@@ -146,14 +141,10 @@ void RecepteurRTL_433::TraiterErreurProcess(QProcess::ProcessError _erreur)
 
 void RecepteurRTL_433::on_timeoutTimerBdd()
 {
-    stationExterieure.EnregistrerTemperatureHumiditeVent();
+    stationExterieure.EnregistrerMesures();
     stationSerre.EnregistrerMesures();
 }
 
-void RecepteurRTL_433::on_timeoutTimerPluie()
-{
-    stationExterieure.EnregistrerPluie();
-}
 
 void RecepteurRTL_433::on_nouvelleConnexionClient()
 {
