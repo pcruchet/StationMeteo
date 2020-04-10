@@ -12,6 +12,7 @@ Window {
     visible: true
     width: 1000
     height: 600
+    property alias afficheurPluie: afficheurPluie
     property alias roseDesVents: roseDesVents
     property alias afficheurVent: afficheurVent
     property alias afficheurBeaufort: afficheurBeaufort
@@ -22,7 +23,7 @@ Window {
 
     WebSocket {
         id: socket
-        url: "ws://127.0.0.1:7777"
+        url: "ws://192.168.1.99:7777"
         onTextMessageReceived: {
             console.log(message);
             var obj=JSON.parse(message);
@@ -48,6 +49,10 @@ Window {
                 afficheurBeaufort.vitesseRafale=Outils.obtenirTemperature(obj.Rafale);
                 lesDixiemes = Outils.obtenirDixieme(obj.Rafale);
                 afficheurBeaufort.dixiemeRafale=Outils.ajouterPoint(lesDixiemes);
+
+                afficheurPluie.cumulDePluie = Outils.obtenirTemperature(obj.Pluie);
+                lesDixiemes = Outils.obtenirDixieme(obj.Pluie);
+                afficheurPluie.cumulDixiemePluie = Outils.ajouterPoint(lesDixiemes);
                 break;
             case 169:
                 afficheurSerre.humidite =  obj.Humidite;
@@ -147,7 +152,7 @@ Window {
             radius: 5
 
             AfficheurPluie{
-                id: cumulPluie
+                id: afficheurPluie
             }
 
         }
