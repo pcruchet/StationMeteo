@@ -1,0 +1,67 @@
+/* DatePicker */
+.datepicker td, .datepicker th {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 0.85rem;
+}
+
+.datepicker {
+    margin-bottom: 3rem;
+}
+
+.input-group {
+    border-radius: 30rem;
+   
+    margin-top: 5%
+}
+input.form-control {
+    border-radius: 30rem 0 0 30rem;
+     
+    border: none;
+}
+
+input.form-control:focus {
+    box-shadow: none;
+}
+
+input.form-control::placeholder {
+    font-style: italic;
+}
+
+.input-group-text {
+    border-radius: 0 30rem 30rem 0;
+    border: none;
+    
+}
+
+.datepicker-dropdown {
+    box-shadow: 0 25px 100px rgba(100, 100, 100, 0.4);
+}
+
+#idTableauMeteo  {
+    text-align: center;
+}
+
+.toolbar
+{
+    float: right;
+}
+
+.alerteHaute
+{
+    background-color: rgba(240, 0, 0, 0.4);
+}
+
+.alerteBasse
+{
+    background-color: rgba(0, 0,240, 0.4);
+}
+
+.table_entete
+{
+    background-color: #007bFF;
+    color: #ffcc00;
+    
+}
+
+
